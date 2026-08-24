@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Backup - Smart Expense Tracker</title>
+    <meta name="description" content="Safely back up your expense and income records to your personal Google Drive for easy restore across devices and reinstalls.">
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Identity Services (GIS) OAuth -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/ai-chat.css">
+    <link rel="stylesheet" href="css/google-drive.css">
+</head>
+<body>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+
+    <!-- UNIFIED SIDEBAR NAVIGATION -->
+    <aside class="sidebar" id="appSidebar">
+        <a href="dashboard.html" class="sidebar-brand">
+            <div class="brand-icon-box">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="brand-title">Smart<span>Expense</span></div>
+        </a>
+
+        <div class="sidebar-nav-section-label">Main Menu</div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="expenses.html">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Expenses</span>
+            </a>
+            <a href="transactions.html">
+                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                <span>Transactions</span>
+            </a>
+            <a href="budget.html">
+                <i class="fa-solid fa-bullseye"></i>
+                <span>Budget</span>
+            </a>
+            <a href="reports.html">
+                <i class="fa-solid fa-chart-simple"></i>
+                <span>Reports & Analytics</span>
+            </a>
+            <a href="cloud-backup.html" class="active">
+                <i class="fa-brands fa-google-drive"></i>
+                <span>Cloud Backup</span>
+            </a>
+            <a href="ai-advisor.html">
+                <i class="fa-solid fa-robot"></i>
+                <span>Ask AI Advisor</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-user">
+            <div class="user-info-chip">
+                <div class="user-avatar-circle" id="userAvatarText">U</div>
+                <div class="user-text-details">
+                    <div class="user-name-display" id="sidebarUserName">User</div>
+                    <div class="user-role-badge">Personal Account</div>
+                </div>
+            </div>
+            <button class="sidebar-logout-btn" id="logoutBtn" title="Sign Out">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        
+        <!-- TOP APP BAR -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle navigation menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="page-title-group">
+                    <h1>Google Drive Cloud Backup</h1>
+                    <p>Securely sync and preserve your financial vault in your private Google Drive</p>
+                </div>
+            </div>
+
+            <div class="top-bar-actions">
+                <button type="button" class="theme-toggle-btn" id="globalThemeToggleBtn" title="Toggle Light/Dark Theme">
+                    <i class="fa-regular fa-sun theme-icon-sun"></i>
+                    <i class="fa-regular fa-moon theme-icon-moon"></i>
+                    <span class="theme-label-text">Theme</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- VIEW CONTAINER -->
+        <div class="dashboard-view" style="max-width: 960px;">
+
+            <!-- 1. CLOUD STATUS HERO CARD -->
+            <section class="section-card" style="padding: 28px;">
+                <div class="cloud-status-banner" style="margin-bottom: 24px; padding: 20px;">
+                    <div class="cloud-status-left">
+                        <div class="cloud-drive-logo-icon" style="width: 52px; height: 52px; font-size: 26px;">
+                            <i class="fa-brands fa-google-drive"></i>
+                        </div>
+                        <div class="cloud-status-info">
+                            <h4 style="font-size: 17px;">
+                                Google Drive Vault
+                                <span class="cloud-status-badge disconnected" id="pageGdriveStatusBadge">Not Connected</span>
+                            </h4>
+                            <p id="pageGdriveLastBackupText" style="font-size: 13.5px; margin-top: 4px;">Last Backup: Never</p>
+                        </div>
+                    </div>
+
+                    <div id="pageGdriveActionContainer">
+                        <button type="button" class="btn-gdrive-connect" id="btnPageConnectGdrive" onclick="GoogleDriveSync.connect()">
+                            <i class="fa-brands fa-google"></i> Connect Google Drive
+                        </button>
+                    </div>
+                </div>
+
+                <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 24px;">
+                    Back up your expense and income data to your private Google Drive so your financial records can be instantly restored whenever you reinstall the app, switch browsers, or clear local storage.
+                </p>
+
+                <!-- Action Grid -->
+                <div class="cloud-actions-grid" style="gap: 16px;">
+                    <button type="button" class="btn-gdrive-action btn-gdrive-backup" id="btnPageBackupNow" onclick="GoogleDriveSync.backupNow()" style="padding: 14px 24px;">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>Backup Now</span>
+                    </button>
+                    <button type="button" class="btn-gdrive-action btn-gdrive-restore" id="btnPageRestoreNow" onclick="GoogleDriveSync.restoreNow()" style="padding: 14px 24px;">
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                        <span>Restore Data</span>
+                    </button>
+                </div>
+
+                <!-- Auto Sync Setting -->
+                <div class="cloud-setting-row" style="margin-top: 10px;">
+                    <div class="cloud-setting-info">
+                        <h5>Automatic Cloud Backup</h5>
+                        <p>Automatically create a fresh backup snapshot in Google Drive before signing out</p>
+                    </div>
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="pageAutoBackupCheck" style="width: 20px; height: 20px; accent-color: var(--primary);">
+                    </label>
+                </div>
+
+                <!-- Google Cloud Console Credentials Accordion -->
+                <div class="gdrive-config-box" style="margin-top: 24px;">
+                    <div class="gdrive-config-header" id="pageToggleConfigBtn">
+                        <span style="font-size: 13.5px;">⚙️ Google OAuth Client ID Configuration</span>
+                        <i class="fa-solid fa-chevron-down" id="pageConfigChevron"></i>
+                    </div>
+
+                    <div class="gdrive-config-content hidden" id="pageConfigContent">
+                        <label style="font-size: 12.5px; font-weight: 600; color: var(--text-secondary); margin-top: 6px;">Google OAuth Web Client ID:</label>
+                        <input type="text" id="pageClientIdInput" placeholder="e.g. 123456789-xyz.apps.googleusercontent.com" style="padding: 10px 14px;">
+                        <button type="button" class="btn-save" id="btnPageSaveClientId" style="padding: 8px 16px; font-size: 13px; align-self: flex-end;">
+                            Save Client ID
+                        </button>
+                        
+                        <div class="gdrive-config-help" style="margin-top: 10px; font-size: 12px; line-height: 1.6;">
+                            <strong>Quick Setup Instructions:</strong><br>
+                            1. Visit the <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console</a>.<br>
+                            2. Create a project and enable the <strong>Google Drive API</strong>.<br>
+                            3. Under <strong>OAuth consent screen</strong>, set user type to <em>External</em>.<br>
+                            4. Under <strong>Credentials > Create OAuth client ID</strong>, choose <em>Web Application</em>.<br>
+                            5. Add your current origin to Authorized JavaScript origins: <code id="pageOriginCode">http://localhost</code>.<br>
+                            6. Paste the Client ID above and click <strong>Save Client ID</strong>!
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. PRIVACY & SECURITY INFO CARD -->
+            <section class="section-card" style="margin-top: 20px; padding: 24px;">
+                <h4 style="font-size: 15px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-shield-halved" style="color: var(--success);"></i>
+                    Security & Privacy Guarantee
+                </h4>
+                <ul style="margin-left: 20px; font-size: 13px; color: var(--text-secondary); line-height: 1.7;">
+                    <li><strong>Least-Privilege Authorization:</strong> Uses <code>drive.file</code> scope, meaning this app can ONLY view and manage files it created itself (<code>smart_expense_tracker_backup.json</code>).</li>
+                    <li><strong>No Access to Personal Documents:</strong> We cannot see, open, or edit any of your other Google Drive files, photos, or documents.</li>
+                    <li><strong>Zero Server Storage:</strong> Your financial data is sent directly between your local browser and your private Google Drive account.</li>
+                </ul>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="js/ai-assistant.js"></script>
+    <script src="js/google-drive-sync.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const originCode = document.getElementById("pageOriginCode");
+            if (originCode) originCode.textContent = window.location.origin || "http://localhost";
+
+            const clientIdInput = document.getElementById("pageClientIdInput");
+            const btnSaveClientId = document.getElementById("btnPageSaveClientId");
+            const toggleBtn = document.getElementById("pageToggleConfigBtn");
+            const configContent = document.getElementById("pageConfigContent");
+            const chevron = document.getElementById("pageConfigChevron");
+            const autoCheck = document.getElementById("pageAutoBackupCheck");
+
+            if (clientIdInput && window.GoogleDriveSync) {
+                clientIdInput.value = window.GoogleDriveSync.getClientId();
+            }
+
+            if (toggleBtn && configContent) {
+                toggleBtn.addEventListener("click", () => {
+                    configContent.classList.toggle("hidden");
+                    chevron.className = configContent.classList.contains("hidden") ? "fa-solid fa-chevron-down" : "fa-solid fa-chevron-up";
+                });
+            }
+
+            if (btnSaveClientId) {
+                btnSaveClientId.addEventListener("click", () => {
+                    if (window.GoogleDriveSync) {
+                        window.GoogleDriveSync.setClientId(clientIdInput.value.trim());
+                        window.GoogleDriveSync.showToast("Google OAuth Client ID saved successfully!", "success");
+                    }
+                });
+            }
+
+            if (autoCheck) {
+                autoCheck.checked = localStorage.getItem("gdrive_auto_backup") === "true";
+                autoCheck.addEventListener("change", () => {
+                    localStorage.setItem("gdrive_auto_backup", autoCheck.checked ? "true" : "false");
+                    if (window.GoogleDriveSync) {
+                        window.GoogleDriveSync.showToast(`Auto backup ${autoCheck.checked ? 'enabled' : 'disabled'}`, "info");
+                    }
+                });
+            }
+
+            // Sync status on page load
+            const updatePageStatus = () => {
+                const isConnected = !!(window.GoogleDriveSync && window.GoogleDriveSync.accessToken);
+                const statusBadge = document.getElementById("pageGdriveStatusBadge");
+                const lastBackupText = document.getElementById("pageGdriveLastBackupText");
+                const actionContainer = document.getElementById("pageGdriveActionContainer");
+
+                const lastBackup = localStorage.getItem("gdrive_last_backup") || "Never";
+                if (lastBackupText) lastBackupText.textContent = `Last Backup: ${lastBackup}`;
+
+                if (isConnected) {
+                    if (statusBadge) {
+                        statusBadge.className = "cloud-status-badge connected";
+                        statusBadge.textContent = "Connected";
+                    }
+                    if (actionContainer) {
+                        const email = (window.GoogleDriveSync.userProfile && window.GoogleDriveSync.userProfile.email) || "Google Account";
+                        actionContainer.innerHTML = `
+                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                                <span style="font-size: 12px; color: var(--text-muted);">${email}</span>
+                                <button type="button" class="btn-gdrive-disconnect" onclick="GoogleDriveSync.disconnect(); window.location.reload();">
+                                    <i class="fa-solid fa-link-slash"></i> Disconnect
+                                </button>
+                            </div>
+                        `;
+                    }
+                } else {
+                    if (statusBadge) {
+                        statusBadge.className = "cloud-status-badge disconnected";
+                        statusBadge.textContent = "Not Connected";
+                    }
+                }
+            };
+
+            setTimeout(updatePageStatus, 300);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics - Smart Expense Tracker</title>
+    <meta name="description" content="Detailed financial analytics, daily/monthly spending trends, category distributions, and PDF/CSV reporting.">
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Identity Services (GIS) OAuth -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/ai-chat.css">
+    <link rel="stylesheet" href="css/google-drive.css">
+    <style>
+        @media print {
+            .sidebar, .top-bar, .filter-panel, .ai-floating-launcher, .ai-chat-drawer, .btn-export-group, #toastContainer {
+                display: none !important;
+            }
+            .main-content {
+                padding: 0 !important;
+                background: #ffffff !important;
+            }
+            .dashboard-view {
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
+            .chart-card, .section-card, .metric-card {
+                box-shadow: none !important;
+                border: 1px solid #e2e8f0 !important;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+
+    <!-- UNIFIED SIDEBAR NAVIGATION -->
+    <aside class="sidebar" id="appSidebar">
+        <a href="dashboard.html" class="sidebar-brand">
+            <div class="brand-icon-box">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="brand-title">Smart<span>Expense</span></div>
+        </a>
+
+        <div class="sidebar-nav-section-label">Main Menu</div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="expenses.html">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Expenses</span>
+            </a>
+            <a href="transactions.html">
+                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                <span>Transactions</span>
+            </a>
+            <a href="budget.html">
+                <i class="fa-solid fa-bullseye"></i>
+                <span>Budget</span>
+            </a>
+            <a href="reports.html" class="active">
+                <i class="fa-solid fa-chart-simple"></i>
+                <span>Reports & Analytics</span>
+            </a>
+            <a href="cloud-backup.html">
+                <i class="fa-brands fa-google-drive"></i>
+                <span>Cloud Backup</span>
+            </a>
+            <a href="ai-advisor.html">
+                <i class="fa-solid fa-robot"></i>
+                <span>Ask AI Advisor</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-user">
+            <div class="user-info-chip">
+                <div class="user-avatar-circle" id="userAvatarText">U</div>
+                <div class="user-text-details">
+                    <div class="user-name-display" id="sidebarUserName">User</div>
+                    <div class="user-role-badge">Personal Account</div>
+                </div>
+            </div>
+            <button class="sidebar-logout-btn" id="logoutBtn" title="Sign Out">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        
+        <!-- TOP APP BAR -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle navigation menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="page-title-group">
+                    <h1>Reports & Financial Intelligence</h1>
+                    <p>Deep analytics, category distributions, and printable summaries</p>
+                </div>
+            </div>
+
+            <div class="top-bar-actions">
+                <button type="button" class="theme-toggle-btn" id="globalThemeToggleBtn" title="Toggle Light/Dark Theme">
+                    <i class="fa-regular fa-sun theme-icon-sun"></i>
+                    <i class="fa-regular fa-moon theme-icon-moon"></i>
+                    <span class="theme-label-text">Theme</span>
+                </button>
+
+                <button class="btn-export-csv" id="btnReportExportCsv" title="Download Excel/CSV Spreadsheet">
+                    <i class="fa-solid fa-file-csv"></i>
+                    <span>Export CSV</span>
+                </button>
+                <button class="btn-quick-add" id="btnReportExportPdf" title="Generate and Print PDF Report">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <span>Export PDF</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- VIEW CONTAINER -->
+        <div class="dashboard-view">
+
+            <!-- 1. TIME RANGE CONTROLS -->
+            <section class="section-card" style="padding: 16px 20px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <span style="font-size: 13px; font-weight: 700; color: var(--text-secondary);">Reporting Period:</span>
+                        <select id="reportPeriodSelect" class="custom-select" style="font-weight: 600;">
+                            <option value="this_month">This Month</option>
+                            <option value="this_week">This Week</option>
+                            <option value="last_month">Last Month</option>
+                            <option value="all_time">All Time</option>
+                            <option value="custom">Custom Date Range...</option>
+                        </select>
+
+                        <div id="reportCustomDateGroup" class="hidden" style="display: inline-flex; align-items: center; gap: 8px;">
+                            <input type="date" id="reportStartDate" class="custom-select" style="padding: 8px 10px;">
+                            <span style="color: var(--text-muted);">to</span>
+                            <input type="date" id="reportEndDate" class="custom-select" style="padding: 8px 10px;">
+                        </div>
+                    </div>
+
+                    <div style="font-size: 12.5px; color: var(--text-muted);" id="reportDateRangeLabel">
+                        Showing active period data
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. SUMMARY KPI METRICS -->
+            <section class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-card-top">
+                        <span class="metric-label">Period Inflow</span>
+                        <div class="metric-icon-badge income"><i class="fa-solid fa-arrow-down-left"></i></div>
+                    </div>
+                    <div class="metric-card-value" id="reportTotalIncome" style="color: var(--success);">₹0</div>
+                    <div class="metric-trend positive"><span>Total earnings logged</span></div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-card-top">
+                        <span class="metric-label">Period Outflow</span>
+                        <div class="metric-icon-badge expense"><i class="fa-solid fa-arrow-up-right"></i></div>
+                    </div>
+                    <div class="metric-card-value" id="reportTotalExpense" style="color: var(--danger);">₹0</div>
+                    <div class="metric-trend negative"><span id="reportExpenseCount">0 transactions</span></div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-card-top">
+                        <span class="metric-label">Net Surplus</span>
+                        <div class="metric-icon-badge balance"><i class="fa-solid fa-vault"></i></div>
+                    </div>
+                    <div class="metric-card-value" id="reportNetSavings">₹0</div>
+                    <div class="metric-trend positive"><span id="reportSavingsRate">0% savings rate</span></div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-card-top">
+                        <span class="metric-label">Daily Outflow Avg</span>
+                        <div class="metric-icon-badge monthly"><i class="fa-solid fa-chart-line"></i></div>
+                    </div>
+                    <div class="metric-card-value" id="reportDailyAvg">₹0</div>
+                    <div class="metric-trend"><span id="reportPeakExpense">Peak: ₹0</span></div>
+                </div>
+            </section>
+
+            <!-- 3. INTERACTIVE CHARTS -->
+            <section class="analytics-grid">
+                
+                <!-- Spending Trajectory Chart -->
+                <div class="chart-card">
+                    <div class="card-header">
+                        <div class="card-header-title">
+                            <h3>Spending Trajectory Over Time</h3>
+                            <p>Daily expenditure pattern for the selected timeline</p>
+                        </div>
+                    </div>
+                    <div class="chart-container-box">
+                        <canvas id="reportTimelineCanvas"></canvas>
+                        <div class="chart-empty-state hidden" id="reportTimelineEmpty">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <p>No transaction entries during this period</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Doughnut Chart -->
+                <div class="chart-card">
+                    <div class="card-header">
+                        <div class="card-header-title">
+                            <h3>Category Allocation</h3>
+                            <p>Where your money was distributed</p>
+                        </div>
+                    </div>
+                    <div class="chart-container-box">
+                        <canvas id="reportCategoryCanvas"></canvas>
+                        <div class="chart-empty-state hidden" id="reportCategoryEmpty">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <p>No category expenses recorded</p>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- 4. CATEGORY BREAKDOWN TABLE & HIGH IMPACT TRANSACTIONS -->
+            <section class="activity-grid">
+                
+                <!-- Category Breakdown Table -->
+                <div class="section-card">
+                    <div class="card-header">
+                        <div class="card-header-title">
+                            <h3>Category Summary Table</h3>
+                            <p>Exact totals and percentage share</p>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive-box">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Entries</th>
+                                    <th>Total Outflow</th>
+                                    <th>% of Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportCategoryTableBody">
+                                <!-- Dynamic category rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Top 5 Highest Outflows -->
+                <div class="section-card">
+                    <div class="card-header">
+                        <div class="card-header-title">
+                            <h3>Highest Outflows</h3>
+                            <p>Top individual expenses in this period</p>
+                        </div>
+                    </div>
+
+                    <div class="transaction-list" id="reportTopExpensesList">
+                        <!-- Dynamic list -->
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="js/ai-assistant.js"></script>
+    <script src="js/google-drive-sync.js"></script>
+    <script src="js/reports.js"></script>
+</body>
+</html>

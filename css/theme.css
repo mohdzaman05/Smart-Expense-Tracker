@@ -1,0 +1,234 @@
+/* =========================================================
+   UNIVERSAL DARK MODE & THEME SYSTEM - SMART EXPENSE TRACKER
+   ========================================================= */
+
+/* Dark Mode Variable Overrides */
+[data-theme="dark"] {
+    /* Base Backgrounds */
+    --bg-app: #0b0f19;
+    --bg-main: #0b0f19;
+    --bg-card: #111827;
+    --bg-muted: #1f2937;
+    --bg-subtle: #1a2234;
+    --bg-hover: #1e293b;
+
+    /* Sidebar */
+    --sidebar-bg: #090d16;
+    --sidebar-border: #1f2937;
+    --sidebar-item: #94a3b8;
+    --sidebar-item-hover: #ffffff;
+    --sidebar-hover: rgba(255, 255, 255, 0.05);
+    --sidebar-active: #4f46e5;
+
+    /* Typography */
+    --text-main: #f8fafc;
+    --text-primary: #f8fafc;
+    --text-body: #cbd5e1;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --text-light: #64748b;
+
+    /* Borders */
+    --border-color: #1f2937;
+    --border-subtle: #192231;
+    --border-focus: #6366f1;
+
+    /* Primary & Accents in Dark Mode */
+    --primary-light: rgba(79, 70, 229, 0.18);
+    --primary-subtle: rgba(79, 70, 229, 0.15);
+
+    --success-light: rgba(16, 185, 129, 0.15);
+    --success-subtle: rgba(16, 185, 129, 0.1);
+    --success-border: rgba(16, 185, 129, 0.3);
+
+    --danger-light: rgba(239, 68, 68, 0.15);
+    --danger-subtle: rgba(239, 68, 68, 0.1);
+    --danger-border: rgba(239, 68, 68, 0.3);
+
+    --warning-light: rgba(245, 158, 11, 0.15);
+    --purple-light: rgba(139, 92, 246, 0.15);
+
+    /* Elevation & Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.6);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.7);
+}
+
+/* Smooth Global Transition for Theme Switching */
+body, 
+.sidebar, 
+.top-bar, 
+.metric-card, 
+.trans-metric-card, 
+.chart-card, 
+.section-card, 
+.form-card, 
+.table-card, 
+.transactions-table-card,
+.modal-card, 
+.auth-form-wrapper,
+.auth-card,
+.toast,
+input, 
+select, 
+textarea {
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* =========================================================
+   THEME TOGGLE BUTTON COMPONENT
+   ========================================================= */
+
+.theme-toggle-btn {
+    background: var(--bg-muted);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: var(--transition-fast);
+}
+
+.theme-toggle-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: #cbd5e1;
+}
+
+[data-theme="dark"] .theme-toggle-btn:hover {
+    border-color: #374151;
+}
+
+.theme-icon-sun {
+    display: none;
+    color: #f59e0b;
+}
+
+.theme-icon-moon {
+    display: inline-block;
+    color: #6366f1;
+}
+
+[data-theme="dark"] .theme-icon-sun {
+    display: inline-block;
+}
+
+[data-theme="dark"] .theme-icon-moon {
+    display: none;
+}
+
+/* Dark Mode Specific Component Adjustments */
+[data-theme="dark"] .top-bar {
+    background: #0f1422;
+    border-color: #1f2937;
+}
+
+[data-theme="dark"] .auth-form-wrapper {
+    background: #0f1422;
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+    background-color: #161e2e;
+    color: #f8fafc;
+    border-color: #283548;
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+    background-color: #1a2436;
+    border-color: #6366f1;
+}
+
+[data-theme="dark"] .modern-table thead,
+[data-theme="dark"] .trx-table thead {
+    background: #151d2d;
+    border-color: #1f2937;
+}
+
+[data-theme="dark"] .modern-table tbody tr:hover,
+[data-theme="dark"] .trx-table tbody tr:hover {
+    background: #172033;
+}
+
+[data-theme="dark"] .transaction-row-item {
+    background: #141c2c;
+    border-color: #1f2937;
+}
+
+[data-theme="dark"] .transaction-row-item:hover {
+    background: #192337;
+    border-color: #334155;
+}
+
+[data-theme="dark"] .trans-cat-icon {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+[data-theme="dark"] .cat-pill-badge {
+    background: #1e293b;
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .custom-select {
+    background-color: #161e2e;
+    color: #f8fafc;
+    border-color: #283548;
+}
+
+[data-theme="dark"] .toast {
+    background: #161e2e;
+    color: #f8fafc;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 0 1px #283548;
+}
+
+[data-theme="dark"] .modal-footer {
+    background: #0f1523;
+    border-color: #1f2937;
+}
+
+[data-theme="dark"] .btn-cancel,
+[data-theme="dark"] .btn-cancel-exp,
+[data-theme="dark"] .btn-export-csv {
+    background: #1a2234;
+    border-color: #2d3b52;
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .btn-cancel:hover,
+[data-theme="dark"] .btn-cancel-exp:hover,
+[data-theme="dark"] .btn-export-csv:hover {
+    background: #243048;
+    color: #f8fafc;
+}
+
+[data-theme="dark"] .progress-track {
+    background: #1f293d;
+}
+
+[data-theme="dark"] .type-toggle-group {
+    background: #141c2c;
+}
+
+[data-theme="dark"] .type-toggle-btn.active.expense,
+[data-theme="dark"] .type-toggle-btn.active.income {
+    background: #1e293b;
+}
+
+[data-theme="dark"] .demo-box {
+    background: rgba(79, 70, 229, 0.15);
+    border-color: #4338ca;
+}
+
+[data-theme="dark"] .demo-box-text {
+    color: #c7d2fe;
+}

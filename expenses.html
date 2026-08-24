@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Management - Smart Expense Tracker</title>
+    <meta name="description" content="Record, categorize, filter, and analyze all your personal and business expenses with advanced search and predictive AI.">
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Identity Services (GIS) OAuth -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/expenses.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/ai-chat.css">
+    <link rel="stylesheet" href="css/google-drive.css">
+</head>
+<body>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+
+    <!-- UNIFIED SIDEBAR NAVIGATION -->
+    <aside class="sidebar" id="appSidebar">
+        <a href="dashboard.html" class="sidebar-brand">
+            <div class="brand-icon-box">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="brand-title">Smart<span>Expense</span></div>
+        </a>
+
+        <div class="sidebar-nav-section-label">Main Menu</div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="expenses.html" class="active">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Expenses</span>
+            </a>
+            <a href="transactions.html">
+                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                <span>Transactions</span>
+            </a>
+            <a href="budget.html">
+                <i class="fa-solid fa-bullseye"></i>
+                <span>Budget</span>
+            </a>
+            <a href="reports.html">
+                <i class="fa-solid fa-chart-simple"></i>
+                <span>Reports & Analytics</span>
+            </a>
+            <a href="cloud-backup.html">
+                <i class="fa-brands fa-google-drive"></i>
+                <span>Cloud Backup</span>
+            </a>
+            <a href="ai-advisor.html">
+                <i class="fa-solid fa-robot"></i>
+                <span>Ask AI Advisor</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-user">
+            <div class="user-info-chip">
+                <div class="user-avatar-circle" id="userAvatarText">U</div>
+                <div class="user-text-details">
+                    <div class="user-name-display" id="sidebarUserName">User</div>
+                    <div class="user-role-badge">Personal Account</div>
+                </div>
+            </div>
+            <button class="sidebar-logout-btn" id="logoutBtn" title="Sign Out">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        
+        <!-- TOP APP BAR -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle navigation menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="page-title-group">
+                    <h1>Expense Log</h1>
+                    <p>Track, categorize, and monitor your expenditure</p>
+                </div>
+            </div>
+
+            <div class="top-bar-actions">
+                <button type="button" class="theme-toggle-btn" id="globalThemeToggleBtn" title="Toggle Light/Dark Theme">
+                    <i class="fa-regular fa-sun theme-icon-sun"></i>
+                    <i class="fa-regular fa-moon theme-icon-moon"></i>
+                    <span class="theme-label-text">Theme</span>
+                </button>
+
+                <button class="btn-add-expense" id="addExpenseBtn">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Add Expense</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- VIEW CONTAINER -->
+        <div class="expenses-view">
+
+            <!-- 1. SUMMARY METRICS -->
+            <section class="expense-metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-top">
+                        <span class="metric-label">Total Outflow</span>
+                        <div class="metric-icon-badge red">
+                            <i class="fa-solid fa-arrow-trend-down"></i>
+                        </div>
+                    </div>
+                    <div class="metric-val" id="totalExpense">₹0</div>
+                    <div class="metric-sub">Cumulative recorded expenses</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-top">
+                        <span class="metric-label">This Month</span>
+                        <div class="metric-icon-badge blue">
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </div>
+                    </div>
+                    <div class="metric-val" id="monthlyExpense">₹0</div>
+                    <div class="metric-sub">Active billing cycle total</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-top">
+                        <span class="metric-label">Total Entries</span>
+                        <div class="metric-icon-badge amber">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                    </div>
+                    <div class="metric-val" id="totalTransactions">0</div>
+                    <div class="metric-sub">Individual expense logs</div>
+                </div>
+            </section>
+
+            <!-- 2. ADD / EDIT EXPENSE FORM -->
+            <section id="expenseFormSection" class="form-card hidden">
+                <div class="form-card-header">
+                    <h3 id="formSectionTitle">Record New Expense</h3>
+                    <button type="button" class="btn-cancel-exp" id="closeFormTopBtn" style="padding: 4px 10px; font-size: 12px;">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <form id="expenseForm">
+                    <div class="form-grid-3">
+                        <div class="form-group">
+                            <label for="expenseName">Expense Title / Description</label>
+                            <input type="text" id="expenseName" placeholder="e.g. Domino's Pizza, Fuel, Netflix" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="amount">Amount (₹)</label>
+                            <input type="number" id="amount" placeholder="0.00" min="1" step="any" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select id="category" required>
+                                <option value="">Select Category</option>
+                                <option value="Food">🍔 Food & Dining</option>
+                                <option value="Travel">🚕 Travel & Transport</option>
+                                <option value="Shopping">🛍️ Shopping</option>
+                                <option value="Bills">💡 Bills & Utilities</option>
+                                <option value="Entertainment">🎬 Entertainment</option>
+                                <option value="Education">📚 Education & Learning</option>
+                                <option value="Health">🏥 Health & Medical</option>
+                                <option value="Rent">🏠 Rent & Housing</option>
+                                <option value="Investment">📈 Investments</option>
+                                <option value="Other">📦 Other Expenses</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="expenseDate">Date</label>
+                            <input type="date" id="expenseDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="paymentMethod">Payment Method</label>
+                            <select id="paymentMethod" required>
+                                <option value="">Select Method</option>
+                                <option value="UPI">📱 UPI</option>
+                                <option value="Cash">💵 Cash</option>
+                                <option value="Debit Card">💳 Debit Card</option>
+                                <option value="Credit Card">💳 Credit Card</option>
+                                <option value="Bank Transfer">🏦 Bank Transfer</option>
+                                <option value="Other">📦 Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="notes">Notes / Reference (Optional)</label>
+                            <input type="text" id="notes" placeholder="Invoice #, tag, or store name">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="cancelBtn" class="btn-cancel-exp">Cancel</button>
+                        <button type="submit" class="btn-save-exp">
+                            <i class="fa-solid fa-check"></i> Save Expense
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- 3. ADVANCED SEARCH & MULTI-FILTER TOOLBAR -->
+            <section class="table-card">
+                <div class="table-toolbar" style="flex-direction: column; align-items: stretch; gap: 14px;">
+                    
+                    <!-- Search & Category Bar -->
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+                        <div class="search-input-wrapper" style="flex: 1; min-width: 260px;">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="searchExpense" placeholder="Search expenses by title, note, or amount...">
+                        </div>
+
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <select id="categoryFilter" class="filter-select">
+                                <option value="all">All Categories</option>
+                                <option value="Food">🍔 Food</option>
+                                <option value="Travel">🚕 Travel</option>
+                                <option value="Shopping">🛍️ Shopping</option>
+                                <option value="Bills">💡 Bills</option>
+                                <option value="Entertainment">🎬 Entertainment</option>
+                                <option value="Education">📚 Education</option>
+                                <option value="Health">🏥 Health</option>
+                                <option value="Rent">🏠 Rent</option>
+                                <option value="Investment">📈 Investment</option>
+                                <option value="Other">📦 Other</option>
+                            </select>
+
+                            <select id="sortExpense" class="filter-select">
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="highest">Highest Amount</option>
+                                <option value="lowest">Lowest Amount</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Min/Max Amount & Date Controls -->
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; padding-top: 10px; border-top: 1px dashed var(--border-subtle);">
+                        <span style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Amount (₹):</span>
+                        <input type="number" id="minAmountFilter" placeholder="Min ₹" class="custom-select" style="width: 100px; padding: 6px 10px; font-size: 12.5px;">
+                        <input type="number" id="maxAmountFilter" placeholder="Max ₹" class="custom-select" style="width: 100px; padding: 6px 10px; font-size: 12.5px;">
+
+                        <span style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-left: 8px;">Date:</span>
+                        <input type="date" id="expenseStartDate" class="custom-select" style="padding: 6px 10px; font-size: 12.5px;">
+                        <span style="color: var(--text-muted); font-size: 12px;">to</span>
+                        <input type="date" id="expenseEndDate" class="custom-select" style="padding: 6px 10px; font-size: 12.5px;">
+
+                        <button type="button" id="btnClearExpenseFilters" class="btn-cancel-exp" style="margin-left: auto; padding: 6px 14px; font-size: 12px;">
+                            <i class="fa-solid fa-rotate-left"></i> Clear Filters
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive-box">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Expense Name</th>
+                                <th>Category</th>
+                                <th>Payment Method</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseTableBody">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+
+                    <div id="emptyMessage" class="empty-table-state hidden">
+                        <i class="fa-regular fa-folder-open"></i>
+                        <h4>No expenses found</h4>
+                        <p>You haven't logged any expenses matching your criteria yet.</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="js/ai-assistant.js"></script>
+    <script src="js/google-drive-sync.js"></script>
+    <script src="js/expenses.js"></script>
+</body>
+</html>

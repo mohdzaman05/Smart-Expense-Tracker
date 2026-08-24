@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Smart Expense Tracker</title>
+    <meta name="description" content="Overview of your financial balance, monthly budget, spending trends, AI insights, and smart financial alerts.">
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Identity Services (GIS) OAuth -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/ai-chat.css">
+    <link rel="stylesheet" href="css/google-drive.css">
+</head>
+<body>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+
+    <!-- UNIFIED SIDEBAR NAVIGATION -->
+    <aside class="sidebar" id="appSidebar">
+        <a href="dashboard.html" class="sidebar-brand">
+            <div class="brand-icon-box">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="brand-title">Smart<span>Expense</span></div>
+        </a>
+
+        <div class="sidebar-nav-section-label">Main Menu</div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="active">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="expenses.html">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Expenses</span>
+            </a>
+            <a href="transactions.html">
+                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                <span>Transactions</span>
+            </a>
+            <a href="budget.html">
+                <i class="fa-solid fa-bullseye"></i>
+                <span>Budget</span>
+            </a>
+            <a href="reports.html">
+                <i class="fa-solid fa-chart-simple"></i>
+                <span>Reports & Analytics</span>
+            </a>
+            <a href="cloud-backup.html">
+                <i class="fa-brands fa-google-drive"></i>
+                <span>Cloud Backup</span>
+            </a>
+            <a href="ai-advisor.html">
+                <i class="fa-solid fa-robot"></i>
+                <span>Ask AI Advisor</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-user">
+            <div class="user-info-chip">
+                <div class="user-avatar-circle" id="userAvatarText">U</div>
+                <div class="user-text-details">
+                    <div class="user-name-display" id="sidebarUserName">User</div>
+                    <div class="user-role-badge">Personal Account</div>
+                </div>
+            </div>
+            <button class="sidebar-logout-btn" id="logoutBtn" title="Sign Out">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content">
+        
+        <!-- TOP APP BAR -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle navigation menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="page-title-group">
+                    <h1 id="welcomeText">Welcome back! 👋</h1>
+                    <p id="currentDateDisplay">Overview of your financial performance</p>
+                </div>
+            </div>
+
+            <div class="top-bar-actions">
+                <button type="button" class="theme-toggle-btn" id="globalThemeToggleBtn" title="Toggle Light/Dark Theme">
+                    <i class="fa-regular fa-sun theme-icon-sun"></i>
+                    <i class="fa-regular fa-moon theme-icon-moon"></i>
+                    <span class="theme-label-text">Theme</span>
+                </button>
+
+                <button class="btn-quick-income" id="openIncomeModalBtn">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Add Income</span>
+                </button>
+                <button class="btn-quick-add" id="openExpenseModalBtn">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Add Expense</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- DASHBOARD BODY -->
+        <div class="dashboard-view">
+
+            <!-- 1. SUMMARY METRIC CARDS -->
+            <section class="metrics-grid">
+                
+                <!-- Net Balance -->
+                <div class="metric-card">
+                    <div class="metric-card-top">
+                        <span class="metric-label">Total Balance</span>
+                        <div class="metric-icon-badge balance">
+                            <i class="fa-solid fa-vault"></i>
+                        </div>
+                    </div>
+                    <div class="metric-card-value" id="currentBalance">₹0</div>
+                    <div class="metric-trend positive" id="savingsRateBadge">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                        <span id="savingsRateText">Net Available</span>
+                    </div>
+                </div>
+
+                <!-- Total Income -->
+                <div class="metric-card">
+                    <div class="metric-card-top">
+                        <span class="metric-label">Total Income</span>
+                        <div class="metric-icon-badge income">
+                            <i class="fa-solid fa-arrow-down-left"></i>
+                        </div>
+                    </div>
+                    <div class="metric-card-value" id="totalIncome">₹0</div>
+                    <div class="metric-trend positive">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>All logged earnings</span>
+                    </div>
+                </div>
+
+                <!-- Total Expenses -->
+                <div class="metric-card">
+                    <div class="metric-card-top">
+                        <span class="metric-label">Total Expenses</span>
+                        <div class="metric-icon-badge expense">
+                            <i class="fa-solid fa-arrow-up-right"></i>
+                        </div>
+                    </div>
+                    <div class="metric-card-value" id="totalExpense">₹0</div>
+                    <div class="metric-trend negative">
+                        <i class="fa-solid fa-receipt"></i>
+                        <span id="expenseCountText">0 total transactions</span>
+                    </div>
+                </div>
+
+                <!-- Current Month Expenses -->
+                <div class="metric-card">
+                    <div class="metric-card-top">
+                        <span class="metric-label">This Month Spending</span>
+                        <div class="metric-icon-badge monthly">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </div>
+                    </div>
+                    <div class="metric-card-value" id="monthlyExpense">₹0</div>
+                    <div class="metric-trend" id="monthStatusBadge">
+                        <i class="fa-regular fa-clock"></i>
+                        <span id="currentMonthName">Current Month</span>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- 2. MONTHLY BUDGET COMPACT CARD -->
+            <section class="section-card" id="dashboardBudgetSection" style="padding: 20px 24px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="metric-icon-badge" style="background: rgba(79, 70, 229, 0.1); color: var(--primary);">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 14.5px; font-weight: 700; color: var(--text-primary);">Monthly Budget Utilization</h4>
+                            <span style="font-size: 12.5px; color: var(--text-muted);" id="dashBudgetSubtitle">Active spending pace</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="badge-pill" id="dashBudgetStatusBadge" style="font-size: 12px;">No Budget Set</span>
+                        <a href="budget.html" class="card-view-all-link" style="font-size: 13px;">Manage Budget &rarr;</a>
+                    </div>
+                </div>
+
+                <div class="progress-track" style="height: 10px; margin-bottom: 10px;">
+                    <div class="progress-fill" id="dashBudgetProgressFill" style="width: 0%; background: var(--primary);"></div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 600; color: var(--text-secondary);">
+                    <span id="dashBudgetRatioText">₹0 / ₹0</span>
+                    <span id="dashBudgetRemainingText" style="color: var(--success);">Remaining: -</span>
+                </div>
+            </section>
+
+            <!-- 3. SMART ALERTS NOTIFICATION BANNER (DATA-DRIVEN) -->
+            <section class="smart-insights-card hidden" id="dashSmartAlertsSection" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); margin-bottom: 24px;">
+                <div class="insights-left">
+                    <div class="insights-icon-circle" id="dashSmartAlertIcon" style="background: rgba(255, 255, 255, 0.15); color: #fbbf24;">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    <div class="insights-content">
+                        <h3 id="dashSmartAlertTitle">Smart Financial Alert</h3>
+                        <p id="dashSmartAlertText">Analyzing your budget limits and recent transactions...</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-cancel" id="btnDismissSmartAlert" style="color: #ffffff; border-color: rgba(255,255,255,0.2); font-size: 12px; padding: 6px 12px;">
+                    Dismiss
+                </button>
+            </section>
+
+            <!-- 4. MONTHLY AI SUMMARY EXECUTIVE CARD -->
+            <section class="ai-monthly-summary-card" id="aiMonthlySummarySection">
+                <div class="ai-summary-header">
+                    <div class="ai-summary-title">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span id="aiSummaryMonthHeader">Monthly AI Spending Summary</span>
+                    </div>
+                    <span class="ai-summary-badge" id="aiSummaryHealthBadge">✨ AI Evaluated</span>
+                </div>
+
+                <div class="ai-summary-metrics-row">
+                    <div class="ai-summary-stat-box">
+                        <span class="ai-stat-lbl">Monthly Outflow</span>
+                        <span class="ai-stat-val" id="aiSummaryTotalSpend">₹0</span>
+                    </div>
+                    <div class="ai-summary-stat-box">
+                        <span class="ai-stat-lbl">Dominant Category</span>
+                        <span class="ai-stat-val" id="aiSummaryTopCat">General</span>
+                    </div>
+                    <div class="ai-summary-stat-box">
+                        <span class="ai-stat-lbl">Largest Single Outflow</span>
+                        <span class="ai-stat-val" id="aiSummaryPeakExpense">₹0</span>
+                    </div>
+                    <div class="ai-summary-stat-box">
+                        <span class="ai-stat-lbl">Spending Velocity</span>
+                        <span class="ai-stat-val" id="aiSummaryMoMTrend">Stable</span>
+                    </div>
+                </div>
+
+                <div class="ai-summary-recommendation" id="aiSummaryAdvice">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span id="aiSummaryAdviceText">Log your daily transactions to receive personalized AI budget recommendations.</span>
+                </div>
+            </section>
+
+            <!-- 5. AI BEHAVIORAL INSIGHTS BANNER -->
+            <section class="smart-insights-card" id="smartInsightsBox">
+                <div class="insights-left">
+                    <div class="insights-icon-circle">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div class="insights-content">
+                        <h3>
+                            AI Behavioral Insights
+                            <span class="insights-badge" id="financialHealthBadge">Healthy</span>
+                        </h3>
+                        <p id="aiInsightText">
+                            Analyzing your recent cash flow trends and expense allocations to deliver personalized recommendations.
+                        </p>
+                    </div>
+                </div>
+                <button class="insights-action-btn" onclick="window.location.href='ai-advisor.html'">
+                    Open AI Advisor <i class="fa-solid fa-arrow-right" style="margin-left: 4px;"></i>
+                </button>
+            </section>
+
+            <!-- 6. INTERACTIVE CHARTS SECTION -->
+            <section class="analytics-grid">
+                
+                <!-- Monthly Spending Trend Chart -->
+                <div class="chart-card">
+                    <div class="card-header">
+                        <div class="card-header-title">
+                            <h3>Cash Flow & Spending Trend</h3>
+                            <p>Income vs Expense comparison</p>
+                        </div>
+                    </div>
+                    <div class="chart-container-box">
+                        <canvas id="trendChartCanvas"></canvas>
+                        <div class="chart-empty-state hidden" id="trendChartEmpty">
+                            <i class="fa-solid fa-chart-column"></i>
+                            <p>No transaction data available yet</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expense Category Doughnut Chart -->
+                <div class="chart-card">
+                    <div class="card-header">
+                        <div class="card-header-title">
+                            <h3>Expense by Category</h3>
+                            <p>Where your money goes</p>
+                        </div>
+                    </div>
+                    <div class="chart-container-box">
+                        <canvas id="categoryChartCanvas"></canvas>
+                        <div class="chart-empty-state hidden" id="categoryChartEmpty">
+                            <i class="fa-solid fa-chart-pie"></i>
+                            <p>Add expenses to view breakdown</p>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- 7. RECENT TRANSACTIONS & TOP CATEGORIES -->
+            <section class="activity-grid">
+                
+                <!-- Recent Transactions Feed -->
+                <div class="section-card">
+                    <div class="card-header">
+                        <div class="card-header-title">
+                            <h3>Recent Transactions</h3>
+                            <p>Your latest financial movements</p>
+                        </div>
+                        <a href="transactions.html" class="card-view-all-link">
+                            View All <i class="fa-solid fa-chevron-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="transaction-list" id="recentTransactionList">
+                        <!-- Dynamic list rendered here -->
+                    </div>
+
+                    <div class="empty-state-box hidden" id="emptyTransactionsState">
+                        <i class="fa-regular fa-folder-open"></i>
+                        <h4>No transactions recorded</h4>
+                        <p>Start recording your daily income and expenses to see them organized here.</p>
+                    </div>
+                </div>
+
+                <!-- Top Expense Categories Progress Bars -->
+                <div class="section-card">
+                    <div class="card-header">
+                        <div class="card-header-title">
+                            <h3>Category Allocations</h3>
+                            <p>Highest spending distribution</p>
+                        </div>
+                    </div>
+
+                    <div class="category-summary-list" id="categoryProgressList">
+                        <!-- Dynamic category bars rendered here -->
+                    </div>
+
+                    <div class="empty-state-box hidden" id="emptyCategoryProgressState">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <h4>No expense data</h4>
+                        <p>Categories will be ranked as soon as you record expenses.</p>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+    </main>
+
+    <!-- QUICK ADD / TRANSACTION MODAL -->
+    <div class="modal-backdrop hidden" id="quickAddModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="quickModalTitle">Add Transaction</h3>
+                <button class="modal-close-btn" id="closeQuickModalBtn" aria-label="Close modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="quickTransactionForm">
+                <div class="modal-body">
+                    <!-- Type Toggle -->
+                    <div class="type-toggle-group">
+                        <button type="button" class="type-toggle-btn active expense" id="quickTypeExpenseBtn">
+                            <i class="fa-solid fa-arrow-up-right"></i> Expense
+                        </button>
+                        <button type="button" class="type-toggle-btn income" id="quickTypeIncomeBtn">
+                            <i class="fa-solid fa-arrow-down-left"></i> Income
+                        </button>
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label for="quickTransName">Description / Name</label>
+                        <input type="text" id="quickTransName" placeholder="e.g. Domino's Pizza, Uber ride, Grocery" required>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="modal-form-group">
+                            <label for="quickTransAmount">Amount (₹)</label>
+                            <input type="number" id="quickTransAmount" placeholder="0.00" min="1" step="any" required>
+                        </div>
+
+                        <div class="modal-form-group">
+                            <label for="quickTransCategory">Category</label>
+                            <select id="quickTransCategory" required>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="modal-form-group">
+                            <label for="quickTransDate">Date</label>
+                            <input type="date" id="quickTransDate" required>
+                        </div>
+
+                        <div class="modal-form-group">
+                            <label for="quickTransPayment">Payment Method</label>
+                            <select id="quickTransPayment" required>
+                                <option value="UPI">📱 UPI</option>
+                                <option value="Cash">💵 Cash</option>
+                                <option value="Debit Card">💳 Debit Card</option>
+                                <option value="Credit Card">💳 Credit Card</option>
+                                <option value="Bank Transfer">🏦 Bank Transfer</option>
+                                <option value="Other">📦 Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="modal-form-group" style="margin-bottom: 0;">
+                        <label for="quickTransNotes">Notes (Optional)</label>
+                        <input type="text" id="quickTransNotes" placeholder="Additional details...">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" id="cancelQuickModalBtn">Cancel</button>
+                    <button type="submit" class="btn-save" id="saveQuickTransBtn">
+                        <i class="fa-solid fa-check"></i> Save Transaction
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="js/ai-assistant.js"></script>
+    <script src="js/google-drive-sync.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

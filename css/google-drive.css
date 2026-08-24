@@ -1,0 +1,358 @@
+/* =========================================================
+   GOOGLE DRIVE CLOUD BACKUP & RESTORE STYLES
+   ========================================================= */
+
+/* Top Bar Cloud Sync Button */
+.btn-cloud-sync {
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.btn-cloud-sync:hover {
+    background: var(--bg-subtle);
+    border-color: #cbd5e1;
+    color: var(--text-primary);
+}
+
+.btn-cloud-sync i.fa-google-drive {
+    color: #0f9d58;
+    font-size: 14px;
+}
+
+.btn-cloud-sync.connected {
+    border-color: #a7f3d0;
+    background: var(--success-light);
+    color: #065f46;
+}
+
+[data-theme="dark"] .btn-cloud-sync.connected {
+    background: rgba(16, 185, 129, 0.15);
+    color: #6ee7b7;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+/* Cloud Backup Modal Specifics */
+.cloud-backup-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.cloud-status-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-subtle);
+    margin-bottom: 18px;
+}
+
+.cloud-status-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.cloud-drive-logo-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #4285f4;
+    box-shadow: var(--shadow-xs);
+}
+
+[data-theme="dark"] .cloud-drive-logo-icon {
+    background: #1e293b;
+}
+
+.cloud-status-info h4 {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cloud-status-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+}
+
+.cloud-status-badge.connected {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.cloud-status-badge.disconnected {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+[data-theme="dark"] .cloud-status-badge.connected {
+    background: rgba(16, 185, 129, 0.2);
+    color: #86efac;
+}
+
+[data-theme="dark"] .cloud-status-badge.disconnected {
+    background: #1e293b;
+    color: #94a3b8;
+}
+
+.cloud-status-info p {
+    font-size: 12.5px;
+    color: var(--text-muted);
+}
+
+/* Cloud Actions Grid */
+.cloud-actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.btn-gdrive-action {
+    padding: 12px 18px;
+    border-radius: var(--radius-md);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.btn-gdrive-backup {
+    background: #0f9d58;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 2px 6px rgba(15, 157, 88, 0.25);
+}
+
+.btn-gdrive-backup:hover {
+    background: #0b8043;
+    transform: translateY(-1px);
+}
+
+.btn-gdrive-restore {
+    background: #4285f4;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 2px 6px rgba(66, 133, 244, 0.25);
+}
+
+.btn-gdrive-restore:hover {
+    background: #3367d6;
+    transform: translateY(-1px);
+}
+
+.btn-gdrive-connect {
+    background: #ffffff;
+    border: 1.5px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 10px 18px;
+    border-radius: var(--radius-md);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow-xs);
+    transition: var(--transition);
+}
+
+.btn-gdrive-connect:hover {
+    background: var(--bg-subtle);
+    border-color: #cbd5e1;
+}
+
+.btn-gdrive-disconnect {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--danger);
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-gdrive-disconnect:hover {
+    background: var(--danger-light);
+    border-color: var(--danger);
+}
+
+/* Auto Backup Setting Section */
+.cloud-setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.cloud-setting-info h5 {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.cloud-setting-info p {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* Client ID Configuration Accordion */
+.gdrive-config-box {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: var(--bg-subtle);
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--border-color);
+}
+
+.gdrive-config-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.gdrive-config-content {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.gdrive-config-content.hidden {
+    display: none;
+}
+
+.gdrive-config-content input {
+    padding: 8px 12px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 12.5px;
+    background: #ffffff;
+}
+
+[data-theme="dark"] .gdrive-config-content input {
+    background: #161e2e;
+}
+
+.gdrive-config-help {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.gdrive-config-help a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.gdrive-config-help a:hover {
+    text-decoration: underline;
+}
+
+/* Restore Preview Card */
+.restore-preview-card {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin: 16px 0;
+}
+
+.restore-preview-stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.restore-preview-stat:last-child {
+    margin-bottom: 0;
+}
+
+.restore-preview-stat span.label {
+    color: var(--text-muted);
+}
+
+.restore-preview-stat span.val {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.restore-options-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 16px 0;
+}
+
+.restore-option-radio {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.restore-option-radio:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.restore-option-radio input {
+    margin-top: 3px;
+}
+
+.restore-option-text h5 {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.restore-option-text p {
+    font-size: 12px;
+    color: var(--text-muted);
+}

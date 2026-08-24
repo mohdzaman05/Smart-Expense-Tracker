@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions - Smart Expense Tracker</title>
+    <meta name="description" content="View and manage complete transaction history, incomes, expenses, export CSV reports, and preview receipts.">
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Identity Services (GIS) OAuth -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/transactions.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/ai-chat.css">
+    <link rel="stylesheet" href="css/google-drive.css">
+</head>
+<body>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="appSidebar">
+        <a href="dashboard.html" class="sidebar-brand">
+            <div class="brand-icon-box">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="brand-title">Smart<span>Expense</span></div>
+        </a>
+
+        <div class="sidebar-nav-section-label">Main Menu</div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="expenses.html">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Expenses</span>
+            </a>
+            <a href="transactions.html" class="active">
+                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                <span>Transactions</span>
+            </a>
+            <a href="budget.html">
+                <i class="fa-solid fa-bullseye"></i>
+                <span>Budget</span>
+            </a>
+            <a href="reports.html">
+                <i class="fa-solid fa-chart-simple"></i>
+                <span>Reports & Analytics</span>
+            </a>
+            <a href="cloud-backup.html">
+                <i class="fa-brands fa-google-drive"></i>
+                <span>Cloud Backup</span>
+            </a>
+            <a href="ai-advisor.html">
+                <i class="fa-solid fa-robot"></i>
+                <span>Ask AI Advisor</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-user">
+            <div class="user-info-chip">
+                <div class="user-avatar-circle" id="userAvatarText">U</div>
+                <div class="user-text-details">
+                    <div class="user-name-display" id="sidebarUserName">User</div>
+                    <div class="user-role-badge">Personal Account</div>
+                </div>
+            </div>
+            <button class="sidebar-logout-btn" id="logoutBtn" title="Sign Out">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        
+        <!-- TOP APP BAR -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle navigation menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="page-title-group">
+                    <h1>Transactions Ledger</h1>
+                    <p>Complete audit of all cash-in and cash-out records</p>
+                </div>
+            </div>
+
+            <div class="top-bar-actions">
+                <button type="button" class="theme-toggle-btn" id="globalThemeToggleBtn" title="Toggle Light/Dark Theme">
+                    <i class="fa-regular fa-sun theme-icon-sun"></i>
+                    <i class="fa-regular fa-moon theme-icon-moon"></i>
+                    <span class="theme-label-text">Theme</span>
+                </button>
+
+                <button class="btn-export-csv" id="exportCsvBtn" title="Export current list to CSV">
+                    <i class="fa-solid fa-file-csv"></i>
+                    <span>Export CSV</span>
+                </button>
+                <button class="btn-add-trans" id="openAddModalBtn">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Add Transaction</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- VIEW CONTAINER -->
+        <div class="transactions-view">
+
+            <!-- 1. SUMMARY METRICS -->
+            <section class="trans-metrics-grid">
+                <div class="trans-metric-card">
+                    <div class="metric-header">
+                        <span>Net Balance</span>
+                        <div class="metric-mini-badge balance">
+                            <i class="fa-solid fa-vault"></i>
+                        </div>
+                    </div>
+                    <h3 id="netBalanceDisplay">₹0</h3>
+                </div>
+
+                <div class="trans-metric-card">
+                    <div class="metric-header">
+                        <span>Total Inflow</span>
+                        <div class="metric-mini-badge income">
+                            <i class="fa-solid fa-arrow-down-left"></i>
+                        </div>
+                    </div>
+                    <h3 id="totalIncomeDisplay" style="color: var(--success);">₹0</h3>
+                </div>
+
+                <div class="trans-metric-card">
+                    <div class="metric-header">
+                        <span>Total Outflow</span>
+                        <div class="metric-mini-badge expense">
+                            <i class="fa-solid fa-arrow-up-right"></i>
+                        </div>
+                    </div>
+                    <h3 id="totalExpenseDisplay" style="color: var(--danger);">₹0</h3>
+                </div>
+
+                <div class="trans-metric-card">
+                    <div class="metric-header">
+                        <span>Total Records</span>
+                        <div class="metric-mini-badge count">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                    </div>
+                    <h3 id="totalCountDisplay">0</h3>
+                </div>
+            </section>
+
+            <!-- 2. FILTER & SEARCH PANEL -->
+            <section class="filter-panel">
+                <div class="filter-row-top">
+                    <!-- Search Box -->
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="searchInput" placeholder="Search by name, note, category...">
+                        <button type="button" class="btn-clear-search" id="clearSearchBtn">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Filter Dropdowns -->
+                    <div class="filter-controls">
+                        <select id="typeFilter" class="custom-select">
+                            <option value="all">All Types</option>
+                            <option value="expense">Expenses Only</option>
+                            <option value="income">Incomes Only</option>
+                        </select>
+
+                        <select id="categoryFilter" class="custom-select">
+                            <option value="all">All Categories</option>
+                        </select>
+
+                        <select id="paymentFilter" class="custom-select">
+                            <option value="all">All Payment Methods</option>
+                            <option value="UPI">📱 UPI</option>
+                            <option value="Cash">💵 Cash</option>
+                            <option value="Debit Card">💳 Debit Card</option>
+                            <option value="Credit Card">💳 Credit Card</option>
+                            <option value="Bank Transfer">🏦 Bank Transfer</option>
+                            <option value="Other">📦 Other</option>
+                        </select>
+
+                        <select id="dateRangeFilter" class="custom-select">
+                            <option value="all">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="this_week">This Week</option>
+                            <option value="this_month">This Month</option>
+                            <option value="custom">Custom Date Range...</option>
+                        </select>
+
+                        <select id="sortFilter" class="custom-select">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="highest">Highest Amount</option>
+                            <option value="lowest">Lowest Amount</option>
+                        </select>
+
+                        <button type="button" id="resetFiltersBtn" class="btn-reset-filters" title="Reset all filters">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>Reset</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Custom Date Range Row -->
+                <div class="custom-date-row hidden" id="customDateRow">
+                    <label for="startDate">From:</label>
+                    <input type="date" id="startDate">
+                    <label for="endDate">To:</label>
+                    <input type="date" id="endDate">
+                </div>
+            </section>
+
+            <!-- 3. TRANSACTIONS TABLE CARD -->
+            <section class="transactions-table-card">
+                <div class="table-header-meta">
+                    <div style="font-size: 14px; font-weight: 700; color: var(--text-primary);">
+                        All Transactions
+                    </div>
+                    <div class="showing-badge" id="showingCountBadge">Showing 0 records</div>
+                </div>
+
+                <div class="table-responsive-box">
+                    <table class="trx-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Transaction</th>
+                                <th>Type</th>
+                                <th>Category</th>
+                                <th>Payment</th>
+                                <th>Amount</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionTableBody">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+
+                    <div id="emptyState" class="empty-state-box hidden" style="padding: 60px 20px;">
+                        <i class="fa-regular fa-folder-open" style="font-size: 40px; color: var(--text-light); margin-bottom: 8px;"></i>
+                        <h4 style="font-size: 16px; font-weight: 700;">No transactions found</h4>
+                        <p id="emptyStateText" style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 14px;">No matching transactions found with the active filters.</p>
+                        <button type="button" class="btn-add-trans" id="emptyAddBtn">
+                            <i class="fa-solid fa-plus"></i> Add Transaction
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- TRANSACTION (ADD/EDIT) MODAL -->
+    <div class="modal-backdrop hidden" id="transactionModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add New Transaction</h3>
+                <button type="button" class="modal-close-btn" id="closeModalBtn" aria-label="Close modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="transactionForm">
+                <input type="hidden" id="editTransactionId">
+                <div class="modal-body">
+                    <div class="type-toggle-group">
+                        <button type="button" class="type-toggle-btn active expense" id="typeExpenseBtn">
+                            <i class="fa-solid fa-arrow-up-right"></i> Expense
+                        </button>
+                        <button type="button" class="type-toggle-btn income" id="typeIncomeBtn">
+                            <i class="fa-solid fa-arrow-down-left"></i> Income
+                        </button>
+                    </div>
+
+                    <div class="modal-form-group">
+                        <label for="transName">Description / Name</label>
+                        <input type="text" id="transName" placeholder="e.g. Domino's Pizza, Client Freelance" required>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="modal-form-group">
+                            <label for="transAmount">Amount (₹)</label>
+                            <input type="number" id="transAmount" placeholder="0.00" min="1" step="any" required>
+                        </div>
+
+                        <div class="modal-form-group">
+                            <label for="transCategory">Category</label>
+                            <select id="transCategory" required>
+                                <!-- Categories populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="modal-form-group">
+                            <label for="transDate">Date</label>
+                            <input type="date" id="transDate" required>
+                        </div>
+
+                        <div class="modal-form-group">
+                            <label for="transPayment">Payment Method</label>
+                            <select id="transPayment" required>
+                                <option value="UPI">📱 UPI</option>
+                                <option value="Cash">💵 Cash</option>
+                                <option value="Debit Card">💳 Debit Card</option>
+                                <option value="Credit Card">💳 Credit Card</option>
+                                <option value="Bank Transfer">🏦 Bank Transfer</option>
+                                <option value="Other">📦 Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="modal-form-group" style="margin-bottom: 0;">
+                        <label for="transNotes">Notes (Optional)</label>
+                        <input type="text" id="transNotes" placeholder="Additional details or invoice note...">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" id="cancelModalBtn">Cancel</button>
+                    <button type="submit" class="btn-save">
+                        <i class="fa-solid fa-check"></i> Save Transaction
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TRANSACTION DETAIL / RECEIPT MODAL WITH AI ANALYSIS -->
+    <div class="modal-backdrop hidden" id="detailModal">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3>Transaction Receipt</h3>
+                <button type="button" class="modal-close-btn" id="closeDetailModalBtn" aria-label="Close receipt">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="receipt-amount-box" id="detailAmountBox">
+                    <span class="badge-pill" id="detailTypeBadge" style="margin-bottom: 8px;">Expense</span>
+                    <h2 id="detailAmount">₹0</h2>
+                    <div style="font-size: 15px; font-weight: 700; color: var(--text-primary); margin-top: 4px;" id="detailName">
+                        Transaction Name
+                    </div>
+                </div>
+
+                <div class="receipt-details-list">
+                    <div class="receipt-row">
+                        <span class="label">Date</span>
+                        <span class="value" id="detailDate">-</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="label">Category</span>
+                        <span class="value" id="detailCategory">-</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="label">Payment Method</span>
+                        <span class="value" id="detailPayment">-</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="label">Reference ID</span>
+                        <span class="value" id="detailId">-</span>
+                    </div>
+                    <div class="receipt-row" style="border-bottom: none;">
+                        <span class="label">Notes</span>
+                        <span class="value" id="detailNotes">-</span>
+                    </div>
+                </div>
+
+                <!-- AI Analysis Box inside Receipt -->
+                <div class="ai-expense-analysis-box" id="detailAIAnalysisBox">
+                    <div class="ai-analysis-header">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>AI Spending Analysis</span>
+                    </div>
+                    <div class="ai-analysis-text" id="detailAIAnalysisText">
+                        Analyzing transaction frequency and budget impact...
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" id="printDetailBtn">
+                    <i class="fa-solid fa-print"></i> Print
+                </button>
+                <button type="button" class="btn-save" id="closeDetailBtn">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="js/ai-assistant.js"></script>
+    <script src="js/google-drive-sync.js"></script>
+    <script src="js/transactions.js"></script>
+</body>
+</html>

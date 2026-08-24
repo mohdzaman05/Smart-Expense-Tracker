@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Financial Advisor - Smart Expense Tracker</title>
+    <meta name="description" content="Interactive AI Financial Advisor. Ask real-time questions about your spending, budgets, savings velocity, and categories.">
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Identity Services (GIS) OAuth -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/ai-chat.css">
+    <link rel="stylesheet" href="css/google-drive.css">
+    <style>
+        .ai-page-chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 160px);
+            min-height: 520px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        .ai-page-chat-feed {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: var(--bg-main);
+        }
+        .ai-page-suggested-shelf {
+            padding: 14px 20px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .ai-page-suggested-shelf::-webkit-scrollbar { display: none; }
+        .ai-page-input-row {
+            padding: 18px 24px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .ai-page-input-row input {
+            flex: 1;
+            padding: 13px 18px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            transition: var(--transition-fast);
+        }
+        .ai-page-input-row input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-card);
+            box-shadow: 0 0 0 3px var(--primary-subtle);
+        }
+        .ai-page-send-btn {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 13px 24px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-fast);
+        }
+        .ai-page-send-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+
+    <!-- UNIFIED SIDEBAR NAVIGATION -->
+    <aside class="sidebar" id="appSidebar">
+        <a href="dashboard.html" class="sidebar-brand">
+            <div class="brand-icon-box">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="brand-title">Smart<span>Expense</span></div>
+        </a>
+
+        <div class="sidebar-nav-section-label">Main Menu</div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="expenses.html">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Expenses</span>
+            </a>
+            <a href="transactions.html">
+                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                <span>Transactions</span>
+            </a>
+            <a href="budget.html">
+                <i class="fa-solid fa-bullseye"></i>
+                <span>Budget</span>
+            </a>
+            <a href="reports.html">
+                <i class="fa-solid fa-chart-simple"></i>
+                <span>Reports & Analytics</span>
+            </a>
+            <a href="cloud-backup.html">
+                <i class="fa-brands fa-google-drive"></i>
+                <span>Cloud Backup</span>
+            </a>
+            <a href="ai-advisor.html" class="active">
+                <i class="fa-solid fa-robot"></i>
+                <span>Ask AI Advisor</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-user">
+            <div class="user-info-chip">
+                <div class="user-avatar-circle" id="userAvatarText">U</div>
+                <div class="user-text-details">
+                    <div class="user-name-display" id="sidebarUserName">User</div>
+                    <div class="user-role-badge">Personal Account</div>
+                </div>
+            </div>
+            <button class="sidebar-logout-btn" id="logoutBtn" title="Sign Out">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        
+        <!-- TOP APP BAR -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle navigation menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="page-title-group">
+                    <h1>🤖 AI Financial Advisor</h1>
+                    <p>Ask questions about your spending, budget and financial patterns.</p>
+                </div>
+            </div>
+
+            <div class="top-bar-actions">
+                <button type="button" class="theme-toggle-btn" id="globalThemeToggleBtn" title="Toggle Light/Dark Theme">
+                    <i class="fa-regular fa-sun theme-icon-sun"></i>
+                    <i class="fa-regular fa-moon theme-icon-moon"></i>
+                    <span class="theme-label-text">Theme</span>
+                </button>
+
+                <button class="btn-secondary" id="btnClearAdvisorChat" title="Clear Conversation History">
+                    <i class="fa-solid fa-trash-can"></i>
+                    <span>Clear Chat</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- VIEW CONTAINER -->
+        <div class="dashboard-view">
+
+            <div class="ai-page-chat-container">
+                <!-- Message Feed -->
+                <div class="ai-page-chat-feed" id="advisorChatFeed">
+                    <div class="chat-msg assistant">
+                        <div class="chat-bubble">
+                            👋 Hello! I am your <strong>AI Financial Advisor</strong>. I have indexed your live expenses, income records, and monthly budget.<br><br>
+                            How can I help optimize your finances today? Try clicking any suggested prompt below or ask your own question!
+                        </div>
+                        <span class="chat-time">Active Session</span>
+                    </div>
+                </div>
+
+                <!-- Suggested Query Chips -->
+                <div class="ai-page-suggested-shelf" id="advisorPromptsShelf">
+                    <button type="button" class="prompt-chip" data-query="Where did I spend the most this month?">📊 Top Spending</button>
+                    <button type="button" class="prompt-chip" data-query="How much money do I have left from my budget?">🎯 Remaining Budget</button>
+                    <button type="button" class="prompt-chip" data-query="Compare this month with last month">📈 MoM Comparison</button>
+                    <button type="button" class="prompt-chip" data-query="How much did I spend on food?">🍔 Food Spending</button>
+                    <button type="button" class="prompt-chip" data-query="What are my biggest expenses?">🔍 Largest Outflows</button>
+                    <button type="button" class="prompt-chip" data-query="How can I reduce my spending?">💡 Savings Advice</button>
+                    <button type="button" class="prompt-chip" data-query="Give me a summary of my spending">📋 Full Month Summary</button>
+                </div>
+
+                <!-- Input Form -->
+                <form class="ai-page-input-row" id="advisorChatForm">
+                    <input type="text" id="advisorChatInput" placeholder="Ask about your expenses, budget limits, category trends..." autocomplete="off">
+                    <button type="submit" class="ai-page-send-btn" id="btnAdvisorSend">
+                        <span>Send</span>
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="js/ai-assistant.js"></script>
+    <script src="js/google-drive-sync.js"></script>
+    <script src="js/ai-advisor.js"></script>
+</body>
+</html>

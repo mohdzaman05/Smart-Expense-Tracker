@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Smart Expense Tracker</title>
+    <meta name="description" content="Manage your finances, track expenses, and gain intelligent spending insights with Smart Expense Tracker.">
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/theme.css">
+</head>
+<body class="auth-page">
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+
+    <div class="auth-container">
+        
+        <!-- LEFT SECTION: BRAND HERO SHOWCASE -->
+        <div class="auth-banner">
+            <div>
+                <a href="#" class="brand-logo">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>SmartExpense</span>
+                </a>
+            </div>
+
+            <div class="brand-hero">
+                <h1>Smart Wealth &<br><span>Expense Tracking</span></h1>
+                <p>
+                    Take complete control of your financial destiny. Track every penny, visualize spending patterns, and make data-driven budget decisions with our built-in AI Advisor.
+                </p>
+
+                <div class="brand-features">
+                    <div class="feature-pill">
+                        <div class="feature-icon-wrapper blue">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <div class="feature-pill-text">
+                            <h4>Real-Time Cash Flow Analytics</h4>
+                            <p>Visual monthly expense trends and category breakdowns</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-pill">
+                        <div class="feature-icon-wrapper green">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="feature-pill-text">
+                            <h4>AI Financial Assistant</h4>
+                            <p>Ask real-time questions about your spending and budgets</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-pill">
+                        <div class="feature-icon-wrapper amber">
+                            <i class="fa-solid fa-moon"></i>
+                        </div>
+                        <div class="feature-pill-text">
+                            <h4>Universal Dark Mode</h4>
+                            <p>Seamlessly switch between light and dark themes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auth-trust">
+                <div class="auth-trust-avatars">
+                    <span>JD</span>
+                    <span>SK</span>
+                    <span>AR</span>
+                </div>
+                <span>Trusted by modern professionals & students</span>
+            </div>
+        </div>
+
+        <!-- RIGHT SECTION: LOGIN FORM -->
+        <div class="auth-form-wrapper">
+            <div class="auth-card">
+                <div class="auth-card-header">
+                    <h2>Welcome back</h2>
+                    <p>Enter your credentials to access your financial dashboard</p>
+                </div>
+
+                <form id="loginForm" autocomplete="on">
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <div class="input-container">
+                            <i class="fa-regular fa-envelope input-icon-left"></i>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                placeholder="name@example.com" 
+                                required
+                                autocomplete="email"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px;">
+                            <label for="password" style="margin-bottom: 0;">Password</label>
+                        </div>
+                        <div class="input-container">
+                            <i class="fa-solid fa-lock input-icon-left"></i>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                placeholder="Enter your password" 
+                                required
+                                autocomplete="current-password"
+                            >
+                            <button type="button" class="toggle-password" id="togglePasswordBtn" title="Toggle password visibility">
+                                <i class="fa-regular fa-eye" id="passwordEyeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="loginSubmitBtn">
+                        <span>Sign In to Dashboard</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+
+                <!-- Demo Account Fast Fill Helper -->
+                <div class="demo-box">
+                    <div class="demo-box-text">
+                        <strong>Demo Mode:</strong> Click to fill sample credentials
+                    </div>
+                    <button type="button" class="demo-box-btn" id="demoAccountBtn">
+                        Auto Fill
+                    </button>
+                </div>
+
+                <div class="auth-footer">
+                    Don't have an account? <a href="register.html">Create free account</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="js/ai-assistant.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

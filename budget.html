@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Management - Smart Expense Tracker</title>
+    <meta name="description" content="Set, track, and manage your monthly and category budgets with real-time spending progress meters.">
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Identity Services (GIS) OAuth -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/ai-chat.css">
+    <link rel="stylesheet" href="css/google-drive.css">
+</head>
+<body>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+
+    <!-- UNIFIED SIDEBAR NAVIGATION -->
+    <aside class="sidebar" id="appSidebar">
+        <a href="dashboard.html" class="sidebar-brand">
+            <div class="brand-icon-box">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="brand-title">Smart<span>Expense</span></div>
+        </a>
+
+        <div class="sidebar-nav-section-label">Main Menu</div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="expenses.html">
+                <i class="fa-solid fa-receipt"></i>
+                <span>Expenses</span>
+            </a>
+            <a href="transactions.html">
+                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                <span>Transactions</span>
+            </a>
+            <a href="budget.html" class="active">
+                <i class="fa-solid fa-bullseye"></i>
+                <span>Budget</span>
+            </a>
+            <a href="reports.html">
+                <i class="fa-solid fa-chart-simple"></i>
+                <span>Reports & Analytics</span>
+            </a>
+            <a href="cloud-backup.html">
+                <i class="fa-brands fa-google-drive"></i>
+                <span>Cloud Backup</span>
+            </a>
+            <a href="ai-advisor.html">
+                <i class="fa-solid fa-robot"></i>
+                <span>Ask AI Advisor</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-user">
+            <div class="user-info-chip">
+                <div class="user-avatar-circle" id="userAvatarText">U</div>
+                <div class="user-text-details">
+                    <div class="user-name-display" id="sidebarUserName">User</div>
+                    <div class="user-role-badge">Personal Account</div>
+                </div>
+            </div>
+            <button class="sidebar-logout-btn" id="logoutBtn" title="Sign Out">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        
+        <!-- TOP APP BAR -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Toggle navigation menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="page-title-group">
+                    <h1>Budget Management</h1>
+                    <p id="budgetMonthSubtitle">Set and monitor monthly financial spending caps</p>
+                </div>
+            </div>
+
+            <div class="top-bar-actions">
+                <button type="button" class="theme-toggle-btn" id="globalThemeToggleBtn" title="Toggle Light/Dark Theme">
+                    <i class="fa-regular fa-sun theme-icon-sun"></i>
+                    <i class="fa-regular fa-moon theme-icon-moon"></i>
+                    <span class="theme-label-text">Theme</span>
+                </button>
+
+                <button class="btn-quick-add" id="openSetBudgetBtn">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Set Monthly Budget</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- VIEW CONTAINER -->
+        <div class="dashboard-view">
+
+            <!-- 1. OVERALL MONTHLY BUDGET HERO CARD -->
+            <section class="section-card" style="padding: 28px; position: relative; overflow: hidden;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <span style="font-size: 13px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px;">Active Monthly Budget</span>
+                        <h2 style="font-size: 28px; font-weight: 800; margin-top: 4px;" id="budgetDisplayRatio">₹0 / ₹0</h2>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="badge-pill" id="budgetHealthBadge" style="font-size: 13px; padding: 6px 14px;">No Budget Set</span>
+                        <button type="button" class="btn-secondary" id="btnResetBudget" style="padding: 6px 12px; font-size: 12px;">
+                            <i class="fa-solid fa-trash-can"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Progress Meter -->
+                <div class="progress-track" style="height: 14px; margin-bottom: 14px;">
+                    <div class="progress-fill" id="mainBudgetProgressFill" style="width: 0%; background: var(--primary);"></div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; font-size: 13.5px; font-weight: 600; color: var(--text-secondary); flex-wrap: wrap; gap: 8px;">
+                    <span id="budgetSpentText">Spent: ₹0</span>
+                    <span id="budgetPercentText">0% of budget used</span>
+                    <span id="budgetRemainingText" style="color: var(--success);">Remaining: ₹0</span>
+                </div>
+            </section>
+
+            <!-- 2. BUDGET THRESHOLD ALERT (IF APPLICABLE) -->
+            <div id="budgetAlertBanner" class="smart-insights-card hidden" style="background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);">
+                <div class="insights-left">
+                    <div class="insights-icon-circle" style="background: rgba(255, 255, 255, 0.2); color: #fecdd3;">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="insights-content">
+                        <h3 id="budgetAlertTitle">Budget Warning</h3>
+                        <p id="budgetAlertDescription">You are approaching your maximum monthly spending threshold.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. CATEGORY BUDGET TARGETS -->
+            <section class="section-card">
+                <div class="card-header">
+                    <div class="card-header-title">
+                        <h3>Category Budget Allocations</h3>
+                        <p>Track your spending limits by category for this month</p>
+                    </div>
+                </div>
+
+                <div class="category-summary-list" id="categoryBudgetsList" style="gap: 20px;">
+                    <!-- Category Budget items dynamically populated -->
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- SET / EDIT BUDGET MODAL -->
+    <div class="modal-backdrop hidden" id="budgetModal">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3 id="budgetModalTitle">Set Monthly Budget</h3>
+                <button type="button" class="modal-close-btn" id="closeBudgetModalBtn" aria-label="Close modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="budgetForm">
+                <div class="modal-body">
+                    <div class="modal-form-group">
+                        <label for="monthlyBudgetInput">Total Monthly Spending Limit (₹)</label>
+                        <input type="number" id="monthlyBudgetInput" placeholder="e.g. 25000" min="500" step="100" required>
+                        <p style="font-size: 11.5px; color: var(--text-muted); margin-top: 4px;">
+                            We will calculate your daily burn rate and notify you when you approach this limit.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" id="cancelBudgetModalBtn">Cancel</button>
+                    <button type="submit" class="btn-save">
+                        <i class="fa-solid fa-check"></i> Save Budget
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="js/ai-assistant.js"></script>
+    <script src="js/google-drive-sync.js"></script>
+    <script src="js/budget.js"></script>
+</body>
+</html>

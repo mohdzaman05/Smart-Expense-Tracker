@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - Smart Expense Tracker</title>
+    <meta name="description" content="Register your account to begin tracking expenses and building healthy financial habits.">
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/theme.css">
+</head>
+<body class="auth-page">
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+
+    <div class="auth-container">
+        
+        <!-- LEFT SECTION: BRAND HERO SHOWCASE -->
+        <div class="auth-banner">
+            <div>
+                <a href="index.html" class="brand-logo">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>SmartExpense</span>
+                </a>
+            </div>
+
+            <div class="brand-hero">
+                <h1>Join the Smart Way<br><span>to Manage Money</span></h1>
+                <p>
+                    Set up your personalized workspace in less than 30 seconds. No complicated setups, zero external tracking, with intelligent AI assistance built-in.
+                </p>
+
+                <div class="brand-features">
+                    <div class="feature-pill">
+                        <div class="feature-icon-wrapper green">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <div class="feature-pill-text">
+                            <h4>Fast & Intuitive Logging</h4>
+                            <p>AI suggestions for category matching as you type</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-pill">
+                        <div class="feature-icon-wrapper blue">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="feature-pill-text">
+                            <h4>AI Financial Advisor</h4>
+                            <p>Ask real-time queries about your spend & savings rate</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-pill">
+                        <div class="feature-icon-wrapper amber">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                        </div>
+                        <div class="feature-pill-text">
+                            <h4>Printable Receipts & Export</h4>
+                            <p>Generate clean receipt views and CSV spreadsheets</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auth-trust">
+                <div class="auth-trust-avatars">
+                    <span>✨</span>
+                    <span>100%</span>
+                    <span>🔒</span>
+                </div>
+                <span>100% Free & Privacy Focused</span>
+            </div>
+        </div>
+
+        <!-- RIGHT SECTION: REGISTER FORM -->
+        <div class="auth-form-wrapper">
+            <div class="auth-card">
+                <div class="auth-card-header">
+                    <h2>Create your account</h2>
+                    <p>Start tracking your expenses and budgeting with ease</p>
+                </div>
+
+                <form id="registerForm" autocomplete="on">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <div class="input-container">
+                            <i class="fa-regular fa-user input-icon-left"></i>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                placeholder="e.g. Alex Johnson" 
+                                required
+                                autocomplete="name"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <div class="input-container">
+                            <i class="fa-regular fa-envelope input-icon-left"></i>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                placeholder="alex@example.com" 
+                                required
+                                autocomplete="email"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-container">
+                            <i class="fa-solid fa-lock input-icon-left"></i>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                placeholder="Create a strong password" 
+                                required
+                                autocomplete="new-password"
+                            >
+                            <button type="button" class="toggle-password" id="toggleRegPasswordBtn" title="Toggle password visibility">
+                                <i class="fa-regular fa-eye" id="regPasswordEyeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <div class="input-container">
+                            <i class="fa-solid fa-check-double input-icon-left"></i>
+                            <input 
+                                type="password" 
+                                id="confirmPassword" 
+                                placeholder="Repeat your password" 
+                                required
+                                autocomplete="new-password"
+                            >
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="registerSubmitBtn">
+                        <span>Create Free Account</span>
+                        <i class="fa-solid fa-user-plus"></i>
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    Already have an account? <a href="index.html">Sign In</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="js/ai-assistant.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
